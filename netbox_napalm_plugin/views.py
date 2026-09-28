@@ -72,6 +72,28 @@ class DeviceLLDPNeighborsView(generic.ObjectView):
         }
 
 
+@register_model_view(Device, "interface-status", path="interface-status")
+class DeviceInterfaceStatusView(generic.ObjectView):
+    additional_permissions = ["dcim.napalm_read_device"]
+    queryset = Device.objects.all()
+    template_name = "netbox_napalm_plugin/interface_status.html"
+    tab = NAPALMViewTab(
+        label=_("Interface Status"), permission="dcim.napalm_read_device", weight=3050
+    )
+
+    def get_extra_context(self, request, instance):
+        interfaces = (
+            instance.vc_interfaces()
+            .restrict(request.user, "view")
+            .prefetch_related("_path")
+            .exclude(type__in=NONCONNECTABLE_IFACE_TYPES)
+        )
+
+        return {
+            "interfaces": interfaces,
+        }
+
+
 @register_model_view(Device, "config")
 class DeviceConfigView(generic.ObjectView):
     additional_permissions = ["dcim.napalm_read_device"]
