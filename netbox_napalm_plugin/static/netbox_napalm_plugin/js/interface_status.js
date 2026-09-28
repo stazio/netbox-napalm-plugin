@@ -168,85 +168,99 @@
     }
     return name;
   }
-  function formatSpeed(speedMbps) {
-    if (speedMbps === null || speedMbps === undefined) {
+  function formatSpeed(speedBps) {
+    if (speedBps === null || speedBps === undefined) {
       return "Unknown";
     }
+    const speedMbps = speedBps / 1000000;
     if (speedMbps >= 1000) {
-      return `${(speedMbps / 1000).toFixed(1)} Gbps`;
+      const gbps = speedMbps / 1000;
+      return gbps % 1 === 0 ? `${gbps}G` : `${gbps.toFixed(1)}G`;
     }
-    return `${speedMbps} Mbps`;
+    return `${speedMbps}M`;
   }
   function updateRowStyle(data) {
     const interfaces = data.get_interfaces;
     const lldpData = data.get_lldp_neighbors_detail;
 
+    // Build LLDP lookup map by short interface name
+    const lldpByShort = {};
     for (const [fullIface, neighbors] of Object.entries(lldpData)) {
-      const [iface] = fullIface.split(".");
-      const row = document.getElementById(iface);
-      if (row !== null) {
-        // Update LLDP neighbor info
-        for (const neighbor of neighbors) {
-          const deviceCell = row.querySelector("td.device");
-          const interfaceCell = row.querySelector("td.interface");
-          const configuredDevice = getData(row, "td.configured_device", "data");
-          const configuredChassis = getData(row, "td.configured_chassis", "data-chassis");
-          const configuredIface = getData(row, "td.configured_interface", "data");
-          const interfaceAlias = getInterfaceAlias(configuredIface);
-          const remoteName = neighbor.remote_system_name ?? "";
-          const remotePort = neighbor.remote_port ?? "";
-          const [neighborDevice] = remoteName.split(".");
-          const [neighborIface] = remotePort.split(".");
-          if (deviceCell !== null) {
-            deviceCell.innerText = neighborDevice;
-          }
-          if (interfaceCell !== null) {
-            interfaceCell.innerText = neighborIface;
-          }
-          const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
-          const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
-          const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface;
-          if (nonConfiguredDevice) {
-            row.classList.add("info");
-          } else if (validNode && validInterface) {
-            row.classList.add("success");
-          } else {
-            row.classList.add("danger");
-          }
-        }
+      const [shortIface] = fullIface.split(".");
+      if (!(shortIface in lldpByShort)) {
+        lldpByShort[shortIface] = [];
+      }
+      lldpByShort[shortIface].push(...neighbors);
+    }
 
-        // Update link status, enabled, last_flapped, and speed from get_interfaces
-        if (fullIface in interfaces) {
-          const ifaceData = interfaces[fullIface];
-          const linkStatusCell = row.querySelector("td.link_status");
-          const enabledCell = row.querySelector("td.enabled");
-          const lastFlappedCell = row.querySelector("td.last_flapped");
-          const speedCell = row.querySelector("td.speed");
-          if (linkStatusCell !== null) {
-            const isUp = ifaceData.is_up;
-            const icon = isUp
-              ? '<i class="mdi mdi-check-circle text-success"></i> Up'
-              : '<i class="mdi mdi-close-circle text-danger"></i> Down';
-            linkStatusCell.innerHTML = icon;
-          }
-          if (enabledCell !== null) {
-            const isEnabled = ifaceData.is_enabled;
-            const icon = isEnabled
-              ? '<i class="mdi mdi-check-circle text-success"></i> Yes'
-              : '<i class="mdi mdi-close-circle text-danger"></i> No';
-            enabledCell.innerHTML = icon;
-          }
-          if (lastFlappedCell !== null) {
-            const lastFlapped = ifaceData.last_flapped;
-            if (lastFlapped) {
-              lastFlappedCell.innerText = new Date(lastFlapped * 1000).toLocaleString();
-            } else {
-              lastFlappedCell.innerText = "Never";
-            }
-          }
-          if (speedCell !== null) {
-            speedCell.innerText = formatSpeed(ifaceData.speed);
-          }
+    // Iterate over all interfaces from the API
+    for (const [fullIface, ifaceData] of Object.entries(interfaces)) {
+      const [shortIface] = fullIface.split(".");
+      const row = document.getElementById(shortIface);
+      if (row === null) {
+        continue;
+      }
+
+      // Update link status, enabled, last_flapped, and speed
+      const linkStatusCell = row.querySelector("td.link_status");
+      const enabledCell = row.querySelector("td.enabled");
+      const lastFlappedCell = row.querySelector("td.last_flapped");
+      const speedCell = row.querySelector("td.speed");
+
+      if (linkStatusCell !== null) {
+        const isUp = ifaceData.is_up;
+        const icon = isUp
+          ? '<i class="mdi mdi-check-circle text-success"></i> Up'
+          : '<i class="mdi mdi-close-circle text-danger"></i> Down';
+        linkStatusCell.innerHTML = icon;
+      }
+      if (enabledCell !== null) {
+        const isEnabled = ifaceData.is_enabled;
+        const icon = isEnabled
+          ? '<i class="mdi mdi-check-circle text-success"></i> Yes'
+          : '<i class="mdi mdi-close-circle text-danger"></i> No';
+        enabledCell.innerHTML = icon;
+      }
+      if (lastFlappedCell !== null) {
+        const lastFlapped = ifaceData.last_flapped;
+        if (lastFlapped !== null && lastFlapped > 0) {
+          lastFlappedCell.innerText = new Date(lastFlapped * 1000).toLocaleString();
+        } else {
+          lastFlappedCell.innerText = "Never";
+        }
+      }
+      if (speedCell !== null) {
+        speedCell.innerText = formatSpeed(ifaceData.speed);
+      }
+
+      // Update LLDP neighbor info
+      const neighbors = lldpByShort[shortIface] ?? [];
+      for (const neighbor of neighbors) {
+        const deviceCell = row.querySelector("td.device");
+        const interfaceCell = row.querySelector("td.interface");
+        const configuredDevice = getData(row, "td.configured_device", "data");
+        const configuredChassis = getData(row, "td.configured_chassis", "data-chassis");
+        const configuredIface = getData(row, "td.configured_interface", "data");
+        const interfaceAlias = getInterfaceAlias(configuredIface);
+        const remoteName = neighbor.remote_system_name ?? "";
+        const remotePort = neighbor.remote_port ?? "";
+        const [neighborDevice] = remoteName.split(".");
+        const [neighborIface] = remotePort.split(".");
+        if (deviceCell !== null) {
+          deviceCell.innerText = neighborDevice;
+        }
+        if (interfaceCell !== null) {
+          interfaceCell.innerText = neighborIface;
+        }
+        const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
+        const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
+        const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface;
+        if (nonConfiguredDevice) {
+          row.classList.add("info");
+        } else if (validNode && validInterface) {
+          row.classList.add("success");
+        } else {
+          row.classList.add("danger");
         }
       }
     }
