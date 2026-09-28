@@ -198,8 +198,10 @@
       const [shortIface] = fullIface.split(".");
       const row = document.getElementById(shortIface);
       if (row === null) {
+        console.warn("[interface_status] No row found for:", shortIface, "(full:", fullIface, ")");
         continue;
       }
+      console.log("[interface_status] Found row:", shortIface, "data:", ifaceData);
 
       // Update link status, enabled, last_flapped, and speed
       const linkStatusCell = row.querySelector("td.link_status");
@@ -267,6 +269,8 @@
   }
   function initInterfaceStatus() {
     toggleLoader("show");
+    // Debug: show all row IDs in the DOM
+    console.log("[interface_status] DOM row IDs:", Array.from(document.querySelectorAll("tbody tr")).map(r => r.id));
     const url = getNetboxData("object-url");
     if (url !== null) {
       apiGetBase(url).then((data) => {
