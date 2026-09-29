@@ -279,3 +279,4 @@ dmypy.json
 cython_debug/
 
 /netbox_napalm_plugin/project-static/node_modules
+netbox/
