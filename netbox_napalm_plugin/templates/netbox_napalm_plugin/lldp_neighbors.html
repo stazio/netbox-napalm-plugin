@@ -25,6 +25,7 @@
                     <th>Configured Interface</th>
                     <th>LLDP Device</th>
                     <th>LLDP Interface</th>
+                    <th>Management IP</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,6 +53,7 @@
                         {% endwith %}
                         <td class="device"></td>
                         <td class="interface"></td>
+                        <td class="mgmt_address"></td>
                     </tr>
                 {% endfor %}
             </tbody>

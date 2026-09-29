@@ -232,7 +232,11 @@
         }
       }
       if (speedCell !== null) {
-        speedCell.innerText = formatSpeed(ifaceData.speed);
+        if (ifaceData.is_up) {
+          speedCell.innerText = formatSpeed(ifaceData.speed);
+        } else {
+          speedCell.innerText = "";
+        }
       }
 
       // Update LLDP neighbor info
