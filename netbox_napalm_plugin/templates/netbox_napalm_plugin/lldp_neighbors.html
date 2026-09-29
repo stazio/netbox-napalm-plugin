@@ -1,5 +1,9 @@
 {% extends 'dcim/device/base.html' %}
+{% load buttons %}
+{% load helpers %}
 {% load napalm_static %}
+{% load perms %}
+{% load i18n %}
 
 {% block title %}{{ object }} - LLDP Neighbors{% endblock %}
 
@@ -26,6 +30,7 @@
                     <th>LLDP Device</th>
                     <th>LLDP Interface</th>
                     <th>Management IP</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,6 +64,38 @@
                         <td class="device"></td>
                         <td class="interface"></td>
                         <td class="mgmt_address"></td>
+                        <td class="actions">
+                            {% if perms.dcim.change_interface %}
+                            <span class="dropdown">
+                                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Add">
+                                    <span class="mdi mdi-plus-thick" aria-hidden="true"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    {% if perms.ipam.add_ipaddress %}
+                                    <li><a class="dropdown-item" href="{% url 'ipam:ipaddress_add' %}?interface={{ iface.pk }}&return_url={% url 'plugins:netbox_napalm_plugin:lldp_neighbors' pk=object.pk %}">IP Address</a></li>
+                                    {% endif %}
+                                    {% if perms.dcim.add_macaddress %}
+                                    <li><a class="dropdown-item" href="{% url 'dcim:macaddress_add' %}?interface={{ iface.pk }}&return_url={% url 'plugins:netbox_napalm_plugin:lldp_neighbors' pk=object.pk %}">MAC Address</a></li>
+                                    {% endif %}
+                                    {% if perms.dcim.add_inventoryitem %}
+                                    <li><a class="dropdown-item" href="{% url 'dcim:inventoryitem_add' %}?device={{ iface.device_id }}&component_type={{ iface|content_type_id }}&component_id={{ iface.pk }}&return_url={% url 'plugins:netbox_napalm_plugin:lldp_neighbors' pk=object.pk %}">Inventory Item</a></li>
+                                    {% endif %}
+                                    {% if perms.dcim.add_interface %}
+                                    <li><a class="dropdown-item" href="{% url 'dcim:interface_add' %}?device={{ iface.device_id }}&parent={{ iface.pk }}&name={{ iface.name }}.&type=virtual&return_url={% url 'plugins:netbox_napalm_plugin:lldp_neighbors' pk=object.pk %}">Child Interface</a></li>
+                                    {% endif %}
+                                    {% if perms.vpn.add_l2vpntermination %}
+                                    <li><a class="dropdown-item" href="{% url 'vpn:l2vpntermination_add' %}?device={{ object.pk }}&interface={{ iface.pk }}&return_url={% url 'plugins:netbox_napalm_plugin:lldp_neighbors' pk=object.pk %}">L2VPN Termination</a></li>
+                                    {% endif %}
+                                    {% if perms.ipam.add_fhrpgroupassignment %}
+                                    <li><a class="dropdown-item" href="{% url 'ipam:fhrpgroupassignment_add' %}?interface_type={{ iface|content_type_id }}&interface_id={{ iface.pk }}&return_url={% url 'plugins:netbox_napalm_plugin:lldp_neighbors' pk=object.pk %}">Assign FHRP Group</a></li>
+                                    {% endif %}
+                                </ul>
+                            </span>
+                            {% endif %}
+                            {% if iface.link %}
+                            <a href="{% url 'dcim:interface_trace' pk=iface.pk %}" class="btn btn-primary btn-sm" title="Trace"><i class="mdi mdi-transit-connection-variant"></i></a>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
