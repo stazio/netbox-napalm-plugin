@@ -31,7 +31,12 @@
             <tbody>
                 {% for iface in interfaces %}
                     <tr id="{{ iface.name }}">
-                        <td>{{ iface }}</td>
+                        <td>
+                            <a href="{% url 'dcim:interface' pk=iface.pk %}">{{ iface }}</a>
+                            <a href="{% url 'dcim:interface_edit' pk=iface.pk %}" class="btn btn-sm btn-outline-secondary ms-1" title="Edit interface">
+                                <i class="mdi mdi-pencil"></i>
+                            </a>
+                        </td>
                         {% with peer=iface.connected_endpoints.0 %}
                           {% if peer.device %}
                               <td class="configured_device" data="{{ peer.device.name }}" data-chassis="{{ peer.device.virtual_chassis.name }}">
