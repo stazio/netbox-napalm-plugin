@@ -71,7 +71,7 @@ function updateRowStyle(data: LLDPNeighborDetail) {
         const deviceCell = row.querySelector<HTMLTableCellElement>('td.device');
         const interfaceCell = row.querySelector<HTMLTableCellElement>('td.interface');
         const configuredDevice = getData(row, 'td.configured_device', 'data');
-        const configuredChassis = getData(row, 'td.configured_chassis', 'data-chassis');
+        const configuredChassis = getData(row, 'td.configured_device', 'data-chassis');
         const configuredIface = getData(row, 'td.configured_interface', 'data');
 
         const interfaceAlias = getInterfaceAlias(configuredIface);
@@ -100,12 +100,22 @@ function updateRowStyle(data: LLDPNeighborDetail) {
         const validInterface =
           configuredIface === neighborIface || interfaceAlias === neighborIface;
 
+        const statusCell = row.querySelector<HTMLTableCellElement>('td.status-cell');
         if (nonConfiguredDevice) {
           row.classList.add('info');
+          if (statusCell !== null) {
+            statusCell.innerHTML = '<i class="mdi mdi-information text-info" title="No configured endpoint"></i>';
+          }
         } else if (validNode && validInterface) {
           row.classList.add('success');
+          if (statusCell !== null) {
+            statusCell.innerHTML = '<i class="mdi mdi-check-circle text-success" title="Match"></i>';
+          }
         } else {
           row.classList.add('danger');
+          if (statusCell !== null) {
+            statusCell.innerHTML = '<i class="mdi mdi-alert text-warning" title="Mismatch"></i>';
+          }
         }
       }
     }

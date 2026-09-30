@@ -25,6 +25,7 @@
                     <th>Configured Interface</th>
                     <th>LLDP Device</th>
                     <th>LLDP Interface</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,6 +53,7 @@
                         {% endwith %}
                         <td class="device"></td>
                         <td class="interface"></td>
+                        <td class="status-cell text-center"></td>
                     </tr>
                 {% endfor %}
             </tbody>
