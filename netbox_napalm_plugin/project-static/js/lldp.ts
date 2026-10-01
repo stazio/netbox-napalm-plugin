@@ -83,35 +83,37 @@ function updateRowStyle(data: LLDPNeighborDetail) {
         if (lldpCell !== null) {
           const deviceSpan = lldpCell.querySelector('.lldp-device');
           const ifaceSpan = lldpCell.querySelector('.lldp-interface');
+          const chevron = lldpCell.querySelector('.mdi-chevron-right');
           if (deviceSpan !== null) {
             deviceSpan.innerText = neighborDevice;
           }
           if (ifaceSpan !== null) {
             ifaceSpan.innerText = neighborIface;
           }
+          if (chevron !== null) {
+            chevron.style.display = (isTruthy(neighborDevice) || isTruthy(neighborIface)) ? '' : 'none';
+          }
         }
 
         // Interface has an LLDP neighbor, but the neighbor is not configured in NetBox.
         const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
-        if (nonConfiguredDevice) {
+        const validNode =
+          configuredDevice === neighborDevice || configuredChassis === neighborDevice;
+        const validInterface =
+          configuredIface === neighborIface || interfaceAlias === neighborIface;
+        const hasMismatch =
+          nonConfiguredDevice ||
+          (!validNode && isTruthy(neighborDevice)) ||
+          (validNode && !validInterface);
+        if (hasMismatch) {
           const warningIcon = row.querySelector<HTMLTableCellElement>('td.configured')?.querySelector('.configured-warning');
           if (warningIcon !== null) {
             warningIcon.style.display = '';
           }
         }
 
-        // NetBox device or chassis matches LLDP neighbor.
-        const validNode =
-          configuredDevice === neighborDevice || configuredChassis === neighborDevice;
-
-        // NetBox configured interface matches LLDP neighbor interface.
-        const validInterface =
-          configuredIface === neighborIface || interfaceAlias === neighborIface;
-
         if (validNode && validInterface) {
           row.classList.add('success');
-        } else {
-          row.classList.add('table-warning');
         }
       }
     }

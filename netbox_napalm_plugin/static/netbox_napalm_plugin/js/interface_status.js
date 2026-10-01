@@ -278,30 +278,31 @@
         if (lldpCell !== null) {
           const deviceSpan = lldpCell.querySelector(".lldp-device");
           const ifaceSpan = lldpCell.querySelector(".lldp-interface");
+          const chevron = lldpCell.querySelector(".mdi-chevron-right");
           if (deviceSpan !== null) {
             deviceSpan.innerText = neighborDevice;
           }
           if (ifaceSpan !== null) {
             ifaceSpan.innerText = neighborIface;
           }
+          if (chevron !== null) {
+            chevron.style.display = isTruthy(neighborDevice) || isTruthy(neighborIface) ? "" : "none";
+          }
         }
         const isUp = ifaceDataTyped.is_up;
         const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
-        if (isUp && nonConfiguredDevice) {
+        const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
+        const exactInterfaceMatch = configuredIface === neighborIface || interfaceAlias === neighborIface;
+        const fuzzyMatch = isTruthy(configuredIface) && isTruthy(neighborIface) && fuzzyIfaceMatch(configuredIface, neighborIface);
+        const hasMismatch = nonConfiguredDevice || !validNode && isTruthy(neighborDevice) || validNode && !exactInterfaceMatch && !fuzzyMatch;
+        if (hasMismatch) {
           const warningIcon = row.querySelector("td.configured")?.querySelector(".configured-warning");
           if (warningIcon !== null) {
             warningIcon.style.display = "";
           }
         }
-        const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
-        const exactInterfaceMatch = configuredIface === neighborIface || interfaceAlias === neighborIface;
-        const fuzzyMatch = isTruthy(configuredIface) && isTruthy(neighborIface) && fuzzyIfaceMatch(configuredIface, neighborIface);
         if (validNode && exactInterfaceMatch) {
           row.classList.add("success");
-        } else if (validNode && fuzzyMatch) {
-          row.classList.add("table-warning");
-        } else {
-          row.classList.add("table-warning");
         }
       }
     }

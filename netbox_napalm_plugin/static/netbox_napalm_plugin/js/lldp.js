@@ -186,26 +186,29 @@
           if (lldpCell !== null) {
             const deviceSpan = lldpCell.querySelector(".lldp-device");
             const ifaceSpan = lldpCell.querySelector(".lldp-interface");
+            const chevron = lldpCell.querySelector(".mdi-chevron-right");
             if (deviceSpan !== null) {
               deviceSpan.innerText = neighborDevice;
             }
             if (ifaceSpan !== null) {
               ifaceSpan.innerText = neighborIface;
             }
+            if (chevron !== null) {
+              chevron.style.display = isTruthy(neighborDevice) || isTruthy(neighborIface) ? "" : "none";
+            }
           }
           const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
-          if (nonConfiguredDevice) {
+          const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
+          const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface;
+          const hasMismatch = nonConfiguredDevice || !validNode && isTruthy(neighborDevice) || validNode && !validInterface;
+          if (hasMismatch) {
             const warningIcon = row.querySelector("td.configured")?.querySelector(".configured-warning");
             if (warningIcon !== null) {
               warningIcon.style.display = "";
             }
           }
-          const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
-          const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface;
           if (validNode && validInterface) {
             row.classList.add("success");
-          } else {
-            row.classList.add("table-warning");
           }
         }
       }
