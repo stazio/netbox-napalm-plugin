@@ -67,8 +67,10 @@ function fuzzyIfaceMatch(a: string, b: string): boolean {
     return false;
   }
 
-  // Compare the first two characters.
-  return prefixA.slice(0, 2) === prefixB.slice(0, 2);
+  // Get leading letters up to the first space, then compare for exact equality.
+  const leadingA = prefixA.split(' ')[0];
+  const leadingB = prefixB.split(' ')[0];
+  return leadingA === leadingB;
 }
 
 /**

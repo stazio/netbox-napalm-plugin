@@ -202,7 +202,9 @@
     if (prefixA.length < 2 || prefixB.length < 2) {
       return false;
     }
-    return prefixA.slice(0, 2) === prefixB.slice(0, 2);
+    const leadingA = prefixA.split(" ")[0];
+    const leadingB = prefixB.split(" ")[0];
+    return leadingA === leadingB;
   }
   function formatSpeed(speedBps) {
     if (speedBps === null || speedBps === void 0) {
