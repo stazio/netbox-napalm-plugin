@@ -288,9 +288,9 @@
         if (validNode && exactInterfaceMatch) {
           row.classList.add("success");
         } else if (validNode && fuzzyMatch) {
-          row.classList.add("warning");
+          row.classList.add("table-warning");
         } else {
-          row.classList.add("warning");
+          row.classList.add("table-warning");
         }
       }
     }
