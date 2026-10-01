@@ -176,7 +176,6 @@
         for (const neighbor of neighbors) {
           const deviceCell = row.querySelector("td.device");
           const interfaceCell = row.querySelector("td.interface");
-          const mgmtCell = row.querySelector("td.mgmt_address");
           const configuredDevice = getData(row, "td.configured_device", "data");
           const configuredChassis = getData(row, "td.configured_chassis", "data-chassis");
           const configuredIface = getData(row, "td.configured_interface", "data");
@@ -190,9 +189,6 @@
           }
           if (interfaceCell !== null) {
             interfaceCell.innerText = neighborIface;
-          }
-          if (mgmtCell !== null && "_mgmt_address" in neighbor) {
-            mgmtCell.innerText = neighbor._mgmt_address;
           }
           const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
           const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;

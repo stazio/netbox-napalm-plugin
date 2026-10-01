@@ -17,6 +17,7 @@
         <div class="card-header">
             <h5 class="d-inline">Interface Status</h5>
         </div>
+
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -34,18 +35,18 @@
             <tbody>
                 {% for iface in interfaces %}
                     <tr id="{{ iface.name }}">
-                        <td>{{ iface }}</td>
+                        <td><a href="{% url 'dcim:interface' pk=iface.pk %}">{{ iface }}</a></td>
                         <td class="link_status"></td>
                         <td class="enabled"></td>
                         <td class="last_flapped"></td>
                         <td class="speed"></td>
                         {% with peer=iface.connected_endpoints.0 %}
                           {% if peer.device %}
-                              <td class="configured_device" data="{{ peer.device.name }}" data-chassis="{{ peer.device.virtual_chassis.name }}">
+                              <td class="configured_device" data="{{ peer.device.name }}" data-chassis="{{ peer.device.virtual_chassis.name }}" data-peer-device-pk="{{ peer.device.pk }}">
                                   <a href="{% url 'dcim:device' pk=peer.device.pk %}">{{ peer.device }}</a>
                               </td>
-                              <td class="configured_interface" data="{{ peer.name }}">
-                                  <span title="{{ peer.get_type_display }}">{{ peer }}</span>
+                              <td class="configured_interface">
+                                  <a href="/dcim/devices/{{ peer.device.pk }}/interface-status/#interface-{{ peer.name }}" title="Go to {{ peer }} on {{ peer.device }}">{{ peer }}</a>
                               </td>
                           {% elif peer.circuit %}
                               {% with circuit=peer.circuit %}

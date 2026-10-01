@@ -146,6 +146,33 @@
       toggleVisibility(element, action);
     }
   }
+  function flashRow(rowId, highlightClass = "table-warning") {
+    const row = document.getElementById(rowId);
+    if (row === null) {
+      return;
+    }
+    row.classList.add(highlightClass);
+    setTimeout(() => {
+      row.classList.remove(highlightClass);
+      setTimeout(() => {
+        row.classList.add(highlightClass);
+        setTimeout(() => {
+          row.classList.remove(highlightClass);
+        }, 500);
+      }, 500);
+    }, 500);
+  }
+  function flashRowFromHash() {
+    const hash = window.location.hash;
+    if (!hash) {
+      return;
+    }
+    const match = hash.match(/^#interface-(.+)$/);
+    if (match !== null && match[1]) {
+      const rowId = decodeURIComponent(match[1]);
+      flashRow(rowId);
+    }
+  }
 
   // js/interface_status.ts
   var CISCO_IOS_PATTERN = new RegExp(/^([A-Z][A-Za-z]+)[^0-9]*([0-9/]+)$/);
@@ -169,12 +196,12 @@
     return name;
   }
   function formatSpeed(speedBps) {
-    if (speedBps === null || speedBps === undefined) {
+    if (speedBps === null || speedBps === void 0) {
       return "Unknown";
     }
-    const speedMbps = speedBps / 1000000;
-    if (speedMbps >= 1000) {
-      const gbps = speedMbps / 1000;
+    const speedMbps = speedBps / 1e6;
+    if (speedMbps >= 1e3) {
+      const gbps = speedMbps / 1e3;
       return gbps % 1 === 0 ? `${gbps}G` : `${gbps.toFixed(1)}G`;
     }
     return `${speedMbps}M`;
@@ -182,8 +209,6 @@
   function updateRowStyle(data) {
     const interfaces = data.get_interfaces;
     const lldpData = data.get_lldp_neighbors_detail;
-
-    // Build LLDP lookup map by short interface name
     const lldpByShort = {};
     for (const [fullIface, neighbors] of Object.entries(lldpData)) {
       const [shortIface] = fullIface.split(".");
@@ -192,8 +217,6 @@
       }
       lldpByShort[shortIface].push(...neighbors);
     }
-
-    // Iterate over all interfaces from the API
     for (const [fullIface, ifaceData] of Object.entries(interfaces)) {
       const [shortIface] = fullIface.split(".");
       const row = document.getElementById(shortIface);
@@ -201,55 +224,47 @@
         console.warn("[interface_status] No row found for:", shortIface, "(full:", fullIface, ")");
         continue;
       }
-      console.log("[interface_status] Found row:", shortIface, "data:", ifaceData);
-
-      // Update link status, enabled, last_flapped, and speed
       const linkStatusCell = row.querySelector("td.link_status");
       const enabledCell = row.querySelector("td.enabled");
       const lastFlappedCell = row.querySelector("td.last_flapped");
       const speedCell = row.querySelector("td.speed");
-
+      const ifaceDataTyped = ifaceData;
       if (linkStatusCell !== null) {
-        const isUp = ifaceData.is_up;
-        const icon = isUp
-          ? '<i class="mdi mdi-check-circle text-success"></i> Up'
-          : '<i class="mdi mdi-close-circle text-danger"></i> Down';
+        const isUp = ifaceDataTyped.is_up;
+        const icon = isUp ? '<i class="mdi mdi-check-circle text-success"></i> Up' : '<i class="mdi mdi-close-circle text-danger"></i> Down';
         linkStatusCell.innerHTML = icon;
       }
       if (enabledCell !== null) {
-        const isEnabled = ifaceData.is_enabled;
-        const icon = isEnabled
-          ? '<i class="mdi mdi-check-circle text-success"></i> Yes'
-          : '<i class="mdi mdi-close-circle text-danger"></i> No';
+        const isEnabled = ifaceDataTyped.is_enabled;
+        const icon = isEnabled ? '<i class="mdi mdi-check-circle text-success"></i> Yes' : '<i class="mdi mdi-close-circle text-danger"></i> No';
         enabledCell.innerHTML = icon;
       }
       if (lastFlappedCell !== null) {
-        const lastFlapped = ifaceData.last_flapped;
+        const lastFlapped = ifaceDataTyped.last_flapped;
         if (lastFlapped !== null && lastFlapped > 0) {
-          lastFlappedCell.innerText = new Date(lastFlapped * 1000).toLocaleString();
+          lastFlappedCell.innerText = new Date(lastFlapped * 1e3).toLocaleString();
         } else {
           lastFlappedCell.innerText = "Never";
         }
       }
       if (speedCell !== null) {
-        if (ifaceData.is_up) {
-          speedCell.innerText = formatSpeed(ifaceData.speed);
+        if (ifaceDataTyped.is_up) {
+          speedCell.innerText = formatSpeed(ifaceDataTyped.speed);
         } else {
           speedCell.innerText = "";
         }
       }
-
-      // Update LLDP neighbor info
       const neighbors = lldpByShort[shortIface] ?? [];
       for (const neighbor of neighbors) {
+        const neighborTyped = neighbor;
         const deviceCell = row.querySelector("td.device");
         const interfaceCell = row.querySelector("td.interface");
         const configuredDevice = getData(row, "td.configured_device", "data");
-        const configuredChassis = getData(row, "td.configured_chassis", "data-chassis");
+        const configuredChassis = getData(row, "td.configured_device", "data-chassis");
         const configuredIface = getData(row, "td.configured_interface", "data");
         const interfaceAlias = getInterfaceAlias(configuredIface);
-        const remoteName = neighbor.remote_system_name ?? "";
-        const remotePort = neighbor.remote_port ?? "";
+        const remoteName = neighborTyped.remote_system_name ?? "";
+        const remotePort = neighborTyped.remote_port ?? "";
         const [neighborDevice] = remoteName.split(".");
         const [neighborIface] = remotePort.split(".");
         if (deviceCell !== null) {
@@ -273,8 +288,6 @@
   }
   function initInterfaceStatus() {
     toggleLoader("show");
-    // Debug: show all row IDs in the DOM
-    console.log("[interface_status] DOM row IDs:", Array.from(document.querySelectorAll("tbody tr")).map(r => r.id));
     const url = getNetboxData("object-url");
     if (url !== null) {
       apiGetBase(url).then((data) => {
@@ -290,6 +303,7 @@
         toggleLoader("hide");
       });
     }
+    flashRowFromHash();
   }
   if (document.readyState !== "loading") {
     initInterfaceStatus();

@@ -478,3 +478,48 @@ export function replaceAll(input: string, pattern: string | RegExp, replacement:
 
   return input.replace(pattern, replacement);
 }
+
+/**
+ * Flash a row by toggling a highlight class twice.
+ *
+ * @param rowId ID of the row to flash.
+ * @param highlightClass CSS class to toggle for the flash effect.
+ */
+export function flashRow(
+  rowId: string,
+  highlightClass: string = 'table-warning',
+): void {
+  const row = document.getElementById(rowId);
+  if (row === null) {
+    return;
+  }
+  // Flash twice: add class, remove, add, remove.
+  row.classList.add(highlightClass);
+  setTimeout(() => {
+    row.classList.remove(highlightClass);
+    setTimeout(() => {
+      row.classList.add(highlightClass);
+      setTimeout(() => {
+        row.classList.remove(highlightClass);
+      }, 500);
+    }, 500);
+  }, 500);
+}
+
+/**
+ * Check for a hash in the URL and flash the corresponding row.
+ *
+ * Expects hash format: #interface-<row_id>
+ */
+export function flashRowFromHash(): void {
+  const hash = window.location.hash;
+  if (!hash) {
+    return;
+  }
+  // Extract the row ID from the hash (e.g., #interface-123 -> 123)
+  const match = hash.match(/^#interface-(.+)$/);
+  if (match !== null && match[1]) {
+    const rowId = decodeURIComponent(match[1]);
+    flashRow(rowId);
+  }
+}
