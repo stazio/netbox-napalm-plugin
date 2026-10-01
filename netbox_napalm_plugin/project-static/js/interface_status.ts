@@ -154,6 +154,7 @@ function updateRowStyle(data: { get_interfaces: Record<string, unknown>; get_lld
 
     // Update LLDP neighbor info
     const neighbors = lldpByShort[shortIface] ?? [];
+    console.log('[interface_status] Interface:', shortIface, 'neighbors:', neighbors.length, 'lldpByShort keys:', Object.keys(lldpByShort));
     for (const neighbor of neighbors) {
       const neighborTyped = neighbor as Record<string, unknown>;
       const lldpCell = row.querySelector<HTMLTableCellElement>('td.lldp');
@@ -169,6 +170,7 @@ function updateRowStyle(data: { get_interfaces: Record<string, unknown>; get_lld
         const deviceSpan = lldpCell.querySelector('.lldp-device');
         const ifaceSpan = lldpCell.querySelector('.lldp-interface');
         const chevron = lldpCell.querySelector('.mdi-chevron-right');
+        console.log('[interface_status] lldpCell found, deviceSpan:', !!deviceSpan, 'ifaceSpan:', !!ifaceSpan, 'chevron:', !!chevron, 'neighborDevice:', neighborDevice, 'neighborIface:', neighborIface);
         if (deviceSpan !== null) {
           deviceSpan.innerText = neighborDevice;
         }
@@ -178,6 +180,8 @@ function updateRowStyle(data: { get_interfaces: Record<string, unknown>; get_lld
         if (chevron !== null) {
           chevron.style.display = (isTruthy(neighborDevice) || isTruthy(neighborIface)) ? '' : 'none';
         }
+      } else {
+        console.log('[interface_status] lldpCell NOT found for row:', shortIface);
       }
       const isUp = ifaceDataTyped.is_up as boolean;
       const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);

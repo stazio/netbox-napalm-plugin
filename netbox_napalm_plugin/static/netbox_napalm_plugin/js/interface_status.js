@@ -264,6 +264,7 @@
         }
       }
       const neighbors = lldpByShort[shortIface] ?? [];
+      console.log("[interface_status] Interface:", shortIface, "neighbors:", neighbors.length, "lldpByShort keys:", Object.keys(lldpByShort));
       for (const neighbor of neighbors) {
         const neighborTyped = neighbor;
         const lldpCell = row.querySelector("td.lldp");
@@ -279,6 +280,7 @@
           const deviceSpan = lldpCell.querySelector(".lldp-device");
           const ifaceSpan = lldpCell.querySelector(".lldp-interface");
           const chevron = lldpCell.querySelector(".mdi-chevron-right");
+          console.log("[interface_status] lldpCell found, deviceSpan:", !!deviceSpan, "ifaceSpan:", !!ifaceSpan, "chevron:", !!chevron, "neighborDevice:", neighborDevice, "neighborIface:", neighborIface);
           if (deviceSpan !== null) {
             deviceSpan.innerText = neighborDevice;
           }
@@ -288,6 +290,8 @@
           if (chevron !== null) {
             chevron.style.display = isTruthy(neighborDevice) || isTruthy(neighborIface) ? "" : "none";
           }
+        } else {
+          console.log("[interface_status] lldpCell NOT found for row:", shortIface);
         }
         const isUp = ifaceDataTyped.is_up;
         const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
