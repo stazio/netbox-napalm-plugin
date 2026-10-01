@@ -282,11 +282,13 @@
         if (interfaceCell !== null) {
           interfaceCell.innerText = neighborIface;
         }
-        const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
         const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
-        const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface || isTruthy(configuredIface) && isTruthy(neighborIface) && fuzzyIfaceMatch(configuredIface, neighborIface);
-        if (validNode && validInterface) {
+        const exactInterfaceMatch = configuredIface === neighborIface || interfaceAlias === neighborIface;
+        const fuzzyMatch = isTruthy(configuredIface) && isTruthy(neighborIface) && fuzzyIfaceMatch(configuredIface, neighborIface);
+        if (validNode && exactInterfaceMatch) {
           row.classList.add("success");
+        } else if (validNode && fuzzyMatch) {
+          row.classList.add("warning");
         } else {
           row.classList.add("warning");
         }
