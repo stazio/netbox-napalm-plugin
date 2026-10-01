@@ -93,6 +93,12 @@ function updateRowStyle(data: LLDPNeighborDetail) {
 
         // Interface has an LLDP neighbor, but the neighbor is not configured in NetBox.
         const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
+        if (nonConfiguredDevice) {
+          const warningIcon = row.querySelector<HTMLTableCellElement>('td.configured')?.querySelector('.configured-warning');
+          if (warningIcon !== null) {
+            warningIcon.style.display = '';
+          }
+        }
 
         // NetBox device or chassis matches LLDP neighbor.
         const validNode =
@@ -102,12 +108,10 @@ function updateRowStyle(data: LLDPNeighborDetail) {
         const validInterface =
           configuredIface === neighborIface || interfaceAlias === neighborIface;
 
-        if (nonConfiguredDevice) {
-          row.classList.add('info');
-        } else if (validNode && validInterface) {
+        if (validNode && validInterface) {
           row.classList.add('success');
         } else {
-          row.classList.add('danger');
+          row.classList.add('table-warning');
         }
       }
     }

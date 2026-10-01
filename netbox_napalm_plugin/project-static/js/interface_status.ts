@@ -175,6 +175,14 @@ function updateRowStyle(data: { get_interfaces: Record<string, unknown>; get_lld
           ifaceSpan.innerText = neighborIface;
         }
       }
+      const isUp = ifaceDataTyped.is_up as boolean;
+      const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
+      if (isUp && nonConfiguredDevice) {
+        const warningIcon = row.querySelector<HTMLTableCellElement>('td.configured')?.querySelector('.configured-warning');
+        if (warningIcon !== null) {
+          warningIcon.style.display = '';
+        }
+      }
       const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
       const exactInterfaceMatch =
         configuredIface === neighborIface || interfaceAlias === neighborIface;

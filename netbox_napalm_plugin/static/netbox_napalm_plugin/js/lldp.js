@@ -194,14 +194,18 @@
             }
           }
           const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
+          if (nonConfiguredDevice) {
+            const warningIcon = row.querySelector("td.configured")?.querySelector(".configured-warning");
+            if (warningIcon !== null) {
+              warningIcon.style.display = "";
+            }
+          }
           const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
           const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface;
-          if (nonConfiguredDevice) {
-            row.classList.add("info");
-          } else if (validNode && validInterface) {
+          if (validNode && validInterface) {
             row.classList.add("success");
           } else {
-            row.classList.add("danger");
+            row.classList.add("table-warning");
           }
         }
       }

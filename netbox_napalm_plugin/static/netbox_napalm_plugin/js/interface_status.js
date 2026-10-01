@@ -279,10 +279,18 @@
           const deviceSpan = lldpCell.querySelector(".lldp-device");
           const ifaceSpan = lldpCell.querySelector(".lldp-interface");
           if (deviceSpan !== null) {
-            deviceSpan.textContent = neighborDevice;
+            deviceSpan.innerText = neighborDevice;
           }
           if (ifaceSpan !== null) {
-            ifaceSpan.textContent = neighborIface;
+            ifaceSpan.innerText = neighborIface;
+          }
+        }
+        const isUp = ifaceDataTyped.is_up;
+        const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
+        if (isUp && nonConfiguredDevice) {
+          const warningIcon = row.querySelector("td.configured")?.querySelector(".configured-warning");
+          if (warningIcon !== null) {
+            warningIcon.style.display = "";
           }
         }
         const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;

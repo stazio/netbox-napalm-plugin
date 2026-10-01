@@ -46,6 +46,7 @@
                                   <a href="{% url 'dcim:device' pk=peer.device.pk %}">{{ peer.device }}</a>
                                   <i class="mdi mdi-chevron-right"></i>
                                   <span title="{{ peer.get_type_display }}">{{ peer }}</span>
+                                  <i class="mdi mdi-alert-outline configured-warning" style="display:none;color:#ffc107;"></i>
                               </td>
                           {% elif peer.circuit %}
                               {% with circuit=peer.circuit %}

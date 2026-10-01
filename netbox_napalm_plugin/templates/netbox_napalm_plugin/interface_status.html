@@ -26,10 +26,8 @@
                     <th>Enabled</th>
                     <th>Last Flapped</th>
                     <th>Speed</th>
-                    <th>Configured Device</th>
-                    <th>Configured Interface</th>
-                    <th>LLDP Device</th>
-                    <th>LLDP Interface</th>
+                    <th>Configured</th>
+                    <th>LLDP</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,6 +44,7 @@
                                   <a href="{% url 'dcim:device' pk=peer.device.pk %}">{{ peer.device }}</a>
                                   <i class="mdi mdi-chevron-right"></i>
                                   <a href="/dcim/devices/{{ peer.device.pk }}/interface-status/#interface-{{ peer.name }}" title="Go to {{ peer }} on {{ peer.device }}">{{ peer }}</a>
+                                  <i class="mdi mdi-alert-outline configured-warning" style="display:none;color:#ffc107;"></i>
                               </td>
                           {% elif peer.circuit %}
                               {% with circuit=peer.circuit %}
