@@ -195,6 +195,15 @@
     }
     return name;
   }
+  function fuzzyIfaceMatch(a, b) {
+    const stripNum = (s) => s.replace(/[^A-Za-z]+$/, "").toUpperCase();
+    const prefixA = stripNum(a);
+    const prefixB = stripNum(b);
+    if (prefixA.length < 2 || prefixB.length < 2) {
+      return false;
+    }
+    return prefixA.slice(0, 2) === prefixB.slice(0, 2);
+  }
   function formatSpeed(speedBps) {
     if (speedBps === null || speedBps === void 0) {
       return "Unknown";
@@ -275,13 +284,11 @@
         }
         const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
         const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
-        const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface;
-        if (nonConfiguredDevice) {
-          row.classList.add("info");
-        } else if (validNode && validInterface) {
+        const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface || isTruthy(configuredIface) && isTruthy(neighborIface) && fuzzyIfaceMatch(configuredIface, neighborIface);
+        if (validNode && validInterface) {
           row.classList.add("success");
         } else {
-          row.classList.add("danger");
+          row.classList.add("warning");
         }
       }
     }

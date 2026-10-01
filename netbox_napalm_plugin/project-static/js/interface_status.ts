@@ -48,6 +48,30 @@ function getInterfaceAlias(name: string | null): string | null {
 }
 
 /**
+ * Fuzzy-match two interface names by comparing their leading alphabetic prefixes.
+ *
+ * Strips trailing numeric portions from both names, then checks whether the first
+ * N characters of the remaining letter prefixes are identical (N >= 2).
+ *
+ * @param a First interface name.
+ * @param b Second interface name.
+ * @returns true if the leading letters match.
+ */
+function fuzzyIfaceMatch(a: string, b: string): boolean {
+  // Strip trailing numeric+slash suffix (e.g. "0/1/2") to get the letter prefix.
+  const stripNum = (s: string): string => s.replace(/[^A-Za-z]+$/, '').toUpperCase();
+  const prefixA = stripNum(a);
+  const prefixB = stripNum(b);
+
+  if (prefixA.length < 2 || prefixB.length < 2) {
+    return false;
+  }
+
+  // Compare the first two characters.
+  return prefixA.slice(0, 2) === prefixB.slice(0, 2);
+}
+
+/**
  * Format speed value from bps to human-readable string.
  *
  * @param speedBps Speed in bits per second.
@@ -150,13 +174,14 @@ function updateRowStyle(data: { get_interfaces: Record<string, unknown>; get_lld
       }
       const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
       const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;
-      const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface;
-      if (nonConfiguredDevice) {
-        row.classList.add('info');
-      } else if (validNode && validInterface) {
+      const validInterface =
+        configuredIface === neighborIface ||
+        interfaceAlias === neighborIface ||
+        (isTruthy(configuredIface) && isTruthy(neighborIface) && fuzzyIfaceMatch(configuredIface, neighborIface));
+      if (validNode && validInterface) {
         row.classList.add('success');
       } else {
-        row.classList.add('danger');
+        row.classList.add('warning');
       }
     }
   }

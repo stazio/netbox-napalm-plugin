@@ -45,7 +45,7 @@
                               <td class="configured_device" data="{{ peer.device.name }}" data-chassis="{{ peer.device.virtual_chassis.name }}" data-peer-device-pk="{{ peer.device.pk }}">
                                   <a href="{% url 'dcim:device' pk=peer.device.pk %}">{{ peer.device }}</a>
                               </td>
-                              <td class="configured_interface">
+                              <td class="configured_interface" data="{{ peer.name }}">
                                   <a href="/dcim/devices/{{ peer.device.pk }}/interface-status/#interface-{{ peer.name }}" title="Go to {{ peer }} on {{ peer.device }}">{{ peer }}</a>
                               </td>
                           {% elif peer.circuit %}
