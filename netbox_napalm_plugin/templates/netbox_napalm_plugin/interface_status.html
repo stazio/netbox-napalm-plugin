@@ -48,13 +48,17 @@
                               </td>
                           {% elif peer.circuit %}
                               {% with circuit=peer.circuit %}
-                                  <td>
+                                  <td class="configured">
                                       <i class="mdi mdi-lightning-bolt" title="Circuit"></i>
                                       <a href="{{ circuit.get_absolute_url }}">{{ circuit.provider }} {{ circuit }}</a>
+                                      <i class="mdi mdi-alert-outline configured-warning" style="display:none;color:#ffc107;"></i>
                                   </td>
                               {% endwith %}
                           {% else %}
-                              <td class="text-muted">None</td>
+                              <td class="text-muted configured">
+                                  None
+                                  <i class="mdi mdi-alert-outline configured-warning" style="display:none;color:#ffc107;"></i>
+                              </td>
                           {% endif %}
                         {% endwith %}
                         <td class="lldp">
