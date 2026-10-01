@@ -154,11 +154,6 @@ function updateRowStyle(data: { get_interfaces: Record<string, unknown>; get_lld
 
     // Update LLDP neighbor info
     const neighbors = lldpByShort[shortIface] ?? [];
-    // Hide chevron by default; show only if we find neighbors
-    const defaultChevron = row.querySelector<HTMLTableCellElement>('td.lldp')?.querySelector('.mdi-chevron-right');
-    if (defaultChevron !== null) {
-      defaultChevron.style.display = 'none';
-    }
     console.log('[interface_status] Interface:', shortIface, 'neighbors:', neighbors.length, 'lldpByShort keys:', Object.keys(lldpByShort));
     for (const neighbor of neighbors) {
       const neighborTyped = neighbor as Record<string, unknown>;

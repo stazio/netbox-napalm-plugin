@@ -264,10 +264,6 @@
         }
       }
       const neighbors = lldpByShort[shortIface] ?? [];
-      const defaultChevron = row.querySelector("td.lldp")?.querySelector(".mdi-chevron-right");
-      if (defaultChevron !== null) {
-        defaultChevron.style.display = "none";
-      }
       console.log("[interface_status] Interface:", shortIface, "neighbors:", neighbors.length, "lldpByShort keys:", Object.keys(lldpByShort));
       for (const neighbor of neighbors) {
         const neighborTyped = neighbor;

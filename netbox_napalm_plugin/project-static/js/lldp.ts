@@ -84,10 +84,6 @@ function updateRowStyle(data: LLDPNeighborDetail) {
           const deviceSpan = lldpCell.querySelector('.lldp-device');
           const ifaceSpan = lldpCell.querySelector('.lldp-interface');
           const chevron = lldpCell.querySelector('.mdi-chevron-right');
-          // Hide chevron by default; show only if we find neighbors
-          if (chevron !== null) {
-            chevron.style.display = 'none';
-          }
           if (deviceSpan !== null) {
             deviceSpan.innerText = neighborDevice;
           }
