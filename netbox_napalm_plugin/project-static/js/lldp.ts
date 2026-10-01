@@ -112,7 +112,7 @@ function updateRowStyle(data: LLDPNeighborDetail) {
         if (hasMismatch) {
           const configuredCell = row.querySelector<HTMLTableCellElement>('td.configured');
           const warningIcon = configuredCell?.querySelector('.configured-warning');
-          if (warningIcon !== null) {
+          if (warningIcon) {
             warningIcon.style.display = '';
           }
         }

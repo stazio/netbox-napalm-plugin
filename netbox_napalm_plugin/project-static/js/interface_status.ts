@@ -206,7 +206,7 @@ function updateRowStyle(data: { get_interfaces: Record<string, unknown>; get_lld
       if (hasMismatch) {
         const configuredCell = row.querySelector<HTMLTableCellElement>('td.configured');
         const warningIcon = configuredCell?.querySelector('.configured-warning');
-        if (warningIcon !== null) {
+        if (warningIcon) {
           warningIcon.style.display = '';
         }
       }
