@@ -174,21 +174,24 @@
       const row = document.getElementById(iface);
       if (row !== null) {
         for (const neighbor of neighbors) {
-          const deviceCell = row.querySelector("td.device");
-          const interfaceCell = row.querySelector("td.interface");
-          const configuredDevice = getData(row, "td.configured_device", "data");
-          const configuredChassis = getData(row, "td.configured_chassis", "data-chassis");
-          const configuredIface = getData(row, "td.configured_interface", "data");
+          const lldpCell = row.querySelector("td.lldp");
+          const configuredDevice = getData(row, "td.configured", "data-device");
+          const configuredChassis = getData(row, "td.configured", "data-chassis");
+          const configuredIface = getData(row, "td.configured", "data-interface");
           const interfaceAlias = getInterfaceAlias(configuredIface);
           const remoteName = neighbor.remote_system_name ?? "";
           const remotePort = neighbor.remote_port ?? "";
           const [neighborDevice] = remoteName.split(".");
           const [neighborIface] = remotePort.split(".");
-          if (deviceCell !== null) {
-            deviceCell.innerText = neighborDevice;
-          }
-          if (interfaceCell !== null) {
-            interfaceCell.innerText = neighborIface;
+          if (lldpCell !== null) {
+            const deviceSpan = lldpCell.querySelector(".lldp-device");
+            const ifaceSpan = lldpCell.querySelector(".lldp-interface");
+            if (deviceSpan !== null) {
+              deviceSpan.innerText = neighborDevice;
+            }
+            if (ifaceSpan !== null) {
+              ifaceSpan.innerText = neighborIface;
+            }
           }
           const nonConfiguredDevice = !isTruthy(configuredDevice) && isTruthy(neighborDevice);
           const validNode = configuredDevice === neighborDevice || configuredChassis === neighborDevice;

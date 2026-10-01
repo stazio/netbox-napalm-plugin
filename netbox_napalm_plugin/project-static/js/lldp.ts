@@ -68,11 +68,10 @@ function updateRowStyle(data: LLDPNeighborDetail) {
 
     if (row !== null) {
       for (const neighbor of neighbors) {
-        const deviceCell = row.querySelector<HTMLTableCellElement>('td.device');
-        const interfaceCell = row.querySelector<HTMLTableCellElement>('td.interface');
-        const configuredDevice = getData(row, 'td.configured_device', 'data');
-        const configuredChassis = getData(row, 'td.configured_chassis', 'data-chassis');
-        const configuredIface = getData(row, 'td.configured_interface', 'data');
+        const lldpCell = row.querySelector<HTMLTableCellElement>('td.lldp');
+        const configuredDevice = getData(row, 'td.configured', 'data-device');
+        const configuredChassis = getData(row, 'td.configured', 'data-chassis');
+        const configuredIface = getData(row, 'td.configured', 'data-interface');
 
         const interfaceAlias = getInterfaceAlias(configuredIface);
 
@@ -81,12 +80,15 @@ function updateRowStyle(data: LLDPNeighborDetail) {
         const [neighborDevice] = remoteName.split('.');
         const [neighborIface] = remotePort.split('.');
 
-        if (deviceCell !== null) {
-          deviceCell.innerText = neighborDevice;
-        }
-
-        if (interfaceCell !== null) {
-          interfaceCell.innerText = neighborIface;
+        if (lldpCell !== null) {
+          const deviceSpan = lldpCell.querySelector('.lldp-device');
+          const ifaceSpan = lldpCell.querySelector('.lldp-interface');
+          if (deviceSpan !== null) {
+            deviceSpan.innerText = neighborDevice;
+          }
+          if (ifaceSpan !== null) {
+            ifaceSpan.innerText = neighborIface;
+          }
         }
 
         // Interface has an LLDP neighbor, but the neighbor is not configured in NetBox.

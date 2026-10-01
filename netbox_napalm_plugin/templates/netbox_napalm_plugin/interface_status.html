@@ -42,25 +42,27 @@
                         <td class="speed"></td>
                         {% with peer=iface.connected_endpoints.0 %}
                           {% if peer.device %}
-                              <td class="configured_device" data="{{ peer.device.name }}" data-chassis="{{ peer.device.virtual_chassis.name }}" data-peer-device-pk="{{ peer.device.pk }}">
+                              <td class="configured" data-device="{{ peer.device.name }}" data-chassis="{{ peer.device.virtual_chassis.name }}" data-peer-device-pk="{{ peer.device.pk }}" data-interface="{{ peer.name }}">
                                   <a href="{% url 'dcim:device' pk=peer.device.pk %}">{{ peer.device }}</a>
-                              </td>
-                              <td class="configured_interface" data="{{ peer.name }}">
+                                  <i class="mdi mdi-chevron-right"></i>
                                   <a href="/dcim/devices/{{ peer.device.pk }}/interface-status/#interface-{{ peer.name }}" title="Go to {{ peer }} on {{ peer.device }}">{{ peer }}</a>
                               </td>
                           {% elif peer.circuit %}
                               {% with circuit=peer.circuit %}
-                                  <td colspan="2">
+                                  <td>
                                       <i class="mdi mdi-lightning-bolt" title="Circuit"></i>
                                       <a href="{{ circuit.get_absolute_url }}">{{ circuit.provider }} {{ circuit }}</a>
                                   </td>
                               {% endwith %}
                           {% else %}
-                              <td class="text-muted" colspan="2">None</td>
+                              <td class="text-muted">None</td>
                           {% endif %}
                         {% endwith %}
-                        <td class="device"></td>
-                        <td class="interface"></td>
+                        <td class="lldp">
+                            <span class="lldp-device"></span>
+                            <i class="mdi mdi-chevron-right"></i>
+                            <span class="lldp-interface"></span>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
