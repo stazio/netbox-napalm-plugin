@@ -198,6 +198,7 @@ function updateRowStyle(data: { get_interfaces: Record<string, unknown>; get_lld
         nonConfiguredDevice ||
         (!validNode && isTruthy(neighborDevice)) ||
         (validNode && !exactInterfaceMatch && !fuzzyMatch);
+      console.log('[interface_status] mismatch check: nonConfiguredDevice:', nonConfiguredDevice, 'validNode:', validNode, 'exactInterfaceMatch:', exactInterfaceMatch, 'fuzzyMatch:', fuzzyMatch, 'hasMismatch:', hasMismatch, 'configuredDevice:', configuredDevice, 'neighborDevice:', neighborDevice, 'configuredIface:', configuredIface, 'neighborIface:', neighborIface);
       if (hasMismatch) {
         const configuredCell = row.querySelector<HTMLTableCellElement>('td.configured');
         const warningIcon = configuredCell?.querySelector('.configured-warning');
