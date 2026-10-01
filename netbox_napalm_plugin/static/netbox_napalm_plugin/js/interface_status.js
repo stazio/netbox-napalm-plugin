@@ -264,6 +264,10 @@
         }
       }
       const neighbors = lldpByShort[shortIface] ?? [];
+      const defaultChevron = row.querySelector("td.lldp")?.querySelector(".mdi-chevron-right");
+      if (defaultChevron !== null) {
+        defaultChevron.style.display = "none";
+      }
       console.log("[interface_status] Interface:", shortIface, "neighbors:", neighbors.length, "lldpByShort keys:", Object.keys(lldpByShort));
       for (const neighbor of neighbors) {
         const neighborTyped = neighbor;
@@ -300,7 +304,8 @@
         const fuzzyMatch = isTruthy(configuredIface) && isTruthy(neighborIface) && fuzzyIfaceMatch(configuredIface, neighborIface);
         const hasMismatch = nonConfiguredDevice || !validNode && isTruthy(neighborDevice) || validNode && !exactInterfaceMatch && !fuzzyMatch;
         if (hasMismatch) {
-          const warningIcon = row.querySelector("td.configured")?.querySelector(".configured-warning");
+          const configuredCell = row.querySelector("td.configured");
+          const warningIcon = configuredCell?.querySelector(".configured-warning");
           if (warningIcon !== null) {
             warningIcon.style.display = "";
           }

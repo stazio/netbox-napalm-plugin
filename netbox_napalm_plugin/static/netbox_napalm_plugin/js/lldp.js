@@ -187,6 +187,9 @@
             const deviceSpan = lldpCell.querySelector(".lldp-device");
             const ifaceSpan = lldpCell.querySelector(".lldp-interface");
             const chevron = lldpCell.querySelector(".mdi-chevron-right");
+            if (chevron !== null) {
+              chevron.style.display = "none";
+            }
             if (deviceSpan !== null) {
               deviceSpan.innerText = neighborDevice;
             }
@@ -202,7 +205,8 @@
           const validInterface = configuredIface === neighborIface || interfaceAlias === neighborIface;
           const hasMismatch = nonConfiguredDevice || !validNode && isTruthy(neighborDevice) || validNode && !validInterface;
           if (hasMismatch) {
-            const warningIcon = row.querySelector("td.configured")?.querySelector(".configured-warning");
+            const configuredCell = row.querySelector("td.configured");
+            const warningIcon = configuredCell?.querySelector(".configured-warning");
             if (warningIcon !== null) {
               warningIcon.style.display = "";
             }
