@@ -287,9 +287,11 @@
           console.log("[interface_status] lldpCell found, deviceSpan:", !!deviceSpan, "ifaceSpan:", !!ifaceSpan, "chevron:", !!chevron, "neighborDevice:", neighborDevice, "neighborIface:", neighborIface);
           if (deviceSpan !== null) {
             deviceSpan.innerText = neighborDevice;
+            console.log("[interface_status] Set deviceSpan to:", deviceSpan.innerText);
           }
           if (ifaceSpan !== null) {
             ifaceSpan.innerText = neighborIface;
+            console.log("[interface_status] Set ifaceSpan to:", ifaceSpan.innerText);
           }
           if (chevron !== null) {
             chevron.style.display = isTruthy(neighborDevice) || isTruthy(neighborIface) ? "" : "none";
